@@ -14,19 +14,5 @@ router.get('/articles', function(req, res, next) {
 	});
 });
 
-router.get('/articles/:id', function(req, res, next) {
-
-	var fs = require('fs');
-	var obj;
-	fs.readFile('./data/articles.json', 'utf8', function (err, data) {
-		if (err) throw err;
-
-		data = _.filter(JSON.parse(data), function(item) {
-		    return item.id == req.params.id;
-		});
-
-		res.json(data);
-	});
-});
 
 module.exports = router;

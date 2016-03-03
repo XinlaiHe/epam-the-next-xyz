@@ -1,7 +1,7 @@
 // include and setup express
 var express = require('express');
 var bodyParser = require('body-parser');
-
+var _ = require('underscore');
 // include express handlebars (templating engine)
 var exphbs  = require('express-handlebars');
 
@@ -31,10 +31,26 @@ app.use(function (req, res, next) {
 
 // respond to the get request with the home page
 app.get('/', function (req, res) {
+
     res.locals.scripts.push("/js/home.js");
     res.render('home');
 });
+// respond to the get request with the individual page
+app.get('/articles/:id', function (req, res) {
 
+    var fs = require('fs');
+    var obj;
+    fs.readFile('./data/articles.json', 'utf8', function (err, data) {
+      if (err) throw err;
+
+      data = _.filter(JSON.parse(data), function(item) {
+          return item.id == req.params.id;
+      });
+
+      res.render('article',{article:data[0]});
+
+    });
+});
 // respond to the get request with the about page
 app.get('/about', function(req, res) {
   res.render('about');
