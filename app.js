@@ -35,11 +35,32 @@ app.get('/', function (req, res) {
     res.locals.scripts.push("/js/home.js");
     res.render('home');
 });
+//respond to the post request with the home page
+app.post("/", function(req,res){
+
+    var fs = require('fs');
+    var jstr;
+    fs.readFile('./data/articles.json', 'utf8', function (err, data) {
+      if (err) throw err;
+
+      var arr = JSON.parse(data);
+      var id = arr.length + 1;
+      req.body.id = id;
+      arr.push(req.body);
+      jstr = JSON.stringify(arr);
+      fs.writeFile('./data/articles.json', jstr, 'utf8',function(err){
+        if(err) throw err;
+      });
+
+    });
+
+    res.redirect('/');
+});
 // respond to the get request with the individual page
 app.get('/articles/:id', function (req, res) {
 
     var fs = require('fs');
-    var obj;
+
     fs.readFile('./data/articles.json', 'utf8', function (err, data) {
       if (err) throw err;
 
