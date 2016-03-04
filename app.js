@@ -32,7 +32,8 @@ app.use(function (req, res, next) {
 // respond to the get request with the home page
 app.get('/', function (req, res) {
 
-    res.locals.scripts.push("/js/home.js");
+    res.locals.scripts.push('/js/home.js');
+
     res.render('home');
 });
 //respond to the post request with the home page
@@ -56,21 +57,11 @@ app.post("/", function(req,res){
 
     res.redirect('/');
 });
-// respond to the get request with the individual page
+// respond to the get request with the individual article page
 app.get('/articles/:id', function (req, res) {
 
-    var fs = require('fs');
-
-    fs.readFile('./data/articles.json', 'utf8', function (err, data) {
-      if (err) throw err;
-
-      data = _.filter(JSON.parse(data), function(item) {
-          return item.id == req.params.id;
-      });
-
-      res.render('article',{article:data[0]});
-
-    });
+    res.locals.scripts.push('/js/article.js');
+    res.render('article');
 });
 // respond to the get request with the about page
 app.get('/about', function(req, res) {
