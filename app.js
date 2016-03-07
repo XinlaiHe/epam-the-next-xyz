@@ -1,6 +1,7 @@
 // include and setup express
 var express = require('express');
 var bodyParser = require('body-parser');
+var mongoose = require("mongoose");
 var _ = require('underscore');
 // include express handlebars (templating engine)
 var exphbs  = require('express-handlebars');
@@ -11,8 +12,21 @@ var hbs = exphbs.create({defaultLayout: 'main'});
 // crethe the express app
 var app = express();
 
-var api = require('./routes/api');
+//CONNECT TO MONGODB set the schema
+mongoose.connect('mongodb://localhost/epam');
 
+var Schema = mongoose.Schema;
+var ArticleSchema = new Schema({
+      id : Number,
+      title : String,
+      summary : String,
+      date : Date,
+      author : String,
+      image : String
+});
+
+mongoose.model("Article", ArticleSchema);
+var Article = mongoose.model("Article");
 // setup handlebars
 app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
@@ -39,23 +53,16 @@ app.get('/', function (req, res) {
 //respond to the post request with the home page
 app.post("/", function(req,res){
 
-    var fs = require('fs');
-    var jstr;
-    fs.readFile('./data/articles.json', 'utf8', function (err, data) {
-      if (err) throw err;
-
-      var arr = JSON.parse(data);
-      var id = arr.length + 1;
-      req.body.id = id;
-      arr.push(req.body);
-      jstr = JSON.stringify(arr);
-      fs.writeFile('./data/articles.json', jstr, 'utf8',function(err){
-        if(err) throw err;
+    Article.find({}, function(err, data){
+        req.body.id = Number(data[data.length-1].id + 1);
+        var article = new Article(req.body);
+        article.save(function(err){
+          if(err) throw err;
+          else  res.redirect('/');
       });
-
     });
 
-    res.redirect('/');
+
 });
 // respond to the get request with the individual article page
 app.get('/articles/:id', function (req, res) {
@@ -93,6 +100,7 @@ app.get('/dashboard', function (req, res) {
 });
 
 // the api (note that typically you would likely organize things a little differently to this)
+var api = require('./routes/api');
 app.use('/api', api);
 
 // create the server based on express
