@@ -39,3 +39,21 @@ function deleteArticle(id){
       }
     })
 }
+function hideUpdateBox(){
+  $(".updatebox").css("display" , "none");
+}
+
+$(".updatebox form").submit(function(e){
+  e.preventDefault();
+
+  var arr = $('.updatebox form').attr('action').split("/");
+  var id = arr[arr.length-1];
+  $.ajax({
+      method: "PUT",
+      url: "/api/articles/"+ id,
+      data: $('.updatebox form').serialize(),
+      success: function(data){
+          window.location.reload();
+      }
+  })
+})

@@ -8,6 +8,7 @@ var Article = mongoose.model("Article");
 
 // note that typically data would NOT be loaded from the filesystem in this manner :)
 router.put('/articles/:id', function(req, res, next){
+
   var update = {$set: req.body};
   Article.update({"id" : req.params.id}, update, function(err){
       if(err) throw err;
@@ -24,8 +25,8 @@ router.get('/articles', function(req, res, next) {
 
 router.get('/articles/:id',function(req, res, next){
 
-  Article.find({"id" : req.params.id}, function(err, data){
-      res.json(data[0]);
+  Article.findOne({"id" : req.params.id}, function(err, data){
+      res.json(data);
   })
 });
 
